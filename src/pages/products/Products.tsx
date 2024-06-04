@@ -1,9 +1,9 @@
-import { useState } from "react";
+import React, { useContext, useState } from "react";
 import "./Products.scss";
 import DataTable from "../../components/dataTable/DataTable";
 import Add from "../../components/add/Add";
 import { GridColDef } from "@mui/x-data-grid";
-import { products } from "../../data";
+import { InitDataContext, InitDataProvider } from "../../context/InitDataContext";
 
 const columns: GridColDef[] = [
   { field: "id", headerName: "ID", width: 90 },
@@ -16,34 +16,16 @@ const columns: GridColDef[] = [
     },
   },
   {
-    field: "title",
+    field: "name",
     type: "string",
     headerName: "Title",
     width: 250,
-  },
-  {
-    field: "color",
-    type: "string",
-    headerName: "Color",
-    width: 150,
   },
   {
     field: "price",
     type: "string",
     headerName: "Price",
     width: 200,
-  },
-  {
-    field: "producer",
-    headerName: "Producer",
-    type: "string",
-    width: 200,
-  },
-  {
-    field: "createdAt",
-    headerName: "Created At",
-    width: 200,
-    type: "string",
   },
   {
     field: "inStock",
@@ -53,18 +35,15 @@ const columns: GridColDef[] = [
   },
 ];
 
-const Products = () => {
+const Products: React.FC = () => {
   const [open, setOpen] = useState(false);
+  const dataContext = useContext(InitDataContext);
 
-  // TEST THE API
+  if (!dataContext || !dataContext.products) {
+    return <div>Loading...</div>;
+  }
 
-  // const { isLoading, data } = useQuery({
-  //   queryKey: ["allproducts"],
-  //   queryFn: () =>
-  //     fetch("http://localhost:8800/api/products").then(
-  //       (res) => res.json()
-  //     ),
-  // });
+  const { products } = dataContext;
 
   return (
     <div className="products">
@@ -72,17 +51,16 @@ const Products = () => {
         <h1>Productos</h1>
         <button onClick={() => setOpen(true)}>Agregar nuevo producto</button>
       </div>
-      <DataTable slug="products" columns={columns} rows={products} />
-      {/* TEST THE API */}
-
-      {/* {isLoading ? (
-        "Loading..."
-      ) : (
-        <DataTable slug="products" columns={columns} rows={data} />
-      )} */}
+      <DataTable slug="products" columns={columns} rows={products.products || []} />
       {open && <Add slug="product" columns={columns} setOpen={setOpen} />}
     </div>
   );
 };
 
-export default Products;
+const ProductsWrapper: React.FC = () => (
+  <InitDataProvider>
+    <Products />
+  </InitDataProvider>
+);
+
+export default ProductsWrapper;
