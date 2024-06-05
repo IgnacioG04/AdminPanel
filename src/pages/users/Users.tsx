@@ -3,7 +3,7 @@ import { GridColDef } from "@mui/x-data-grid";
 import DataTable from "../../components/dataTable/DataTable";
 import "./Users.scss";
 import Add from "../../components/add/Add";
-import { InitDataContext } from "../../context/InitDataContext";
+import { InitDataContext, InitDataProvider } from "../../context/InitDataContext";
 
 const columns: GridColDef[] = [
   { field: "id", headerName: "ID", width: 90 },
@@ -57,4 +57,10 @@ const Users: React.FC = () => {
   );
 };
 
-export default Users;
+const listUser: React.FC = () => (
+  <InitDataProvider>
+    <Users />
+  </InitDataProvider>
+);
+
+export default listUser;
